@@ -1,0 +1,10 @@
+*~
+*.bak
+*.o
+*.dep
+*.swp
+tests/
+info/
+bin/
+yacre
+yacre.zip
