@@ -12,6 +12,8 @@ namespace yacre
      */
     class Object {
         public:
+            virtual ~Object() = default;
+
             void SetPosition(const glm::vec3 &p) {mPosition = p;}
             void SetSacale(float s) {mScale = s;}
             void SetOrientation(const glm::vec3 &axis, float angle)

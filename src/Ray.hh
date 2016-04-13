@@ -1,7 +1,7 @@
 #ifndef RAY_HH_P9QUOIE0
 #define RAY_HH_P9QUOIE0
 
-#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
 
 namespace yacre
 {
@@ -39,7 +39,7 @@ namespace yacre
              * be set to the distance between the ray's origin and the
              * intersection point.
              *
-             * \return Pointer to the intersected object or NULL if no
+             * \return Pointer to the intersected object or nullptr if no
              * intersection.
              */
             const Object* Trace(const Scene &scene, float &distance) const;

@@ -3,8 +3,9 @@
 
 #include <memory>
 #include <unordered_map>
+#include <string>
 
-#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
 
 #include "Object.hh"
 #include "Primitive.hh"
@@ -15,30 +16,32 @@ namespace yacre
 {
     class Scene {
         public:
-            Scene(const Camera &cam): mCamera(cam){}
+            Scene(Camera *cam): mCamera(cam) {}
             virtual ~Scene();
 
-            void AddPrimitive(const std::string &name, const Primitive *p);
-            void AddLamp(const std::string &name, const Lamp *l);
-            void AddMaterial(const std::string &name, const Material *m);
+            void AddPrimitive(const std::string &name, Primitive *p);
+            void AddLamp(const std::string &name, Lamp* l);
+            void AddMaterial(const std::string &name, Material *m);
 
             bool RemovePrimitive(const std::string &name);
             bool RemoveLamp(const std::string &name);
             bool RemoveMaterial(const std::string &name);
 
             void SetBackgroundColor(glm::vec3 col) {mBackgroundColor = col;}
-            void SetCamera(const Camera &cam) {mCamera = cam;}
+            void SetCamera(Camera *cam) {delete mCamera; mCamera = cam;}
 
             glm::vec3 GetBackgroundColor() const {return mBackgroundColor;}
-            const Camera& GetCamera() const {return mCamera;}
-            Camera& GetCamera() {return mCamera;}
+            const Camera* GetCamera() const {return mCamera;}
+            Camera* GetCamera() {return mCamera;}
+
+            unsigned char* Render() const;
 
         private:
             // Basic components of the scene
             std::unordered_map<std::string, Primitive*> mPrimitives;
             std::unordered_map<std::string, Lamp*> mLamps;
             std::unordered_map<std::string, Material*> mMaterials;
-            Camera mCamera;
+            Camera *mCamera;
 
             glm::vec3 mBackgroundColor;
     };

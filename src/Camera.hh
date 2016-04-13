@@ -1,7 +1,7 @@
 #ifndef CAMERA_HH_2ZXHHKEM
 #define CAMERA_HH_2ZXHHKEM
 
-#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
 
 #include "Object.cc"
 
@@ -10,10 +10,10 @@ namespace yacre
     class Camera : Object
     {
     public:
-        Camera(unsigned w, unsigned h, float fov = glm::half_pi()):
+        Camera(unsigned w, unsigned h, float fov = glm::half_pi<float>()):
         mFov(fov), mResolution(w, h) {}
 
-        virtual ~Camera();
+        virtual ~Camera() = default;
 
         void SetFov(float fov) {mFov = fov;}
         void SetResolution(glm::uvec2 res) {mResolution = res;}

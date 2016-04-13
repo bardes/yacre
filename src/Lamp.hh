@@ -1,7 +1,7 @@
 #ifndef LAMP_HH_XHDGXTFQ
 #define LAMP_HH_XHDGXTFQ
 
-#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
 
 #include "Object.hh"
 
