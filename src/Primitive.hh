@@ -4,27 +4,50 @@
 #include <glm/glm.hpp>
 
 #include "Object.hh"
-#include "Ray.hh"
 #include "Material.hh"
+#include "Ray.hh"
 
 namespace yacre
 {
+    struct Ray;
     class Primitive : public Object {
         public:
-            virtual bool CheckInstersection(const Ray &r,
-                                            glm::vec3 &point) const = 0;
+            Primitive(const Material *mat = nullptr):
+            mMaterial(mat), Object() {}
+            virtual ~Primitive() = default;
+
+            virtual float
+            CheckInstersection(const Ray &r) const = 0;
 
             virtual glm::vec3 GetNormal(const glm::vec3 &point) const = 0;
 
-            glm::vec3 GetColor(const glm::vec3 &point,
-                               const glm::vec3 &incidence) const
+            glm::vec3
+            GetColor(const glm::vec3 &point, const glm::vec3 &incidence) const
             {
                 return mMaterial ?
                        mMaterial->ComputeColor(incidence, GetNormal(point)):
                        glm::vec3(0);
             }
 
+            bool Reflect(const Ray &in, Ray &out) const
+            {
+                return !mMaterial ? false :
+                        mMaterial->Reflection(in.GetDirection(),
+                                              GetNormal(out.GetOrigin()),
+                                              out.GetDirection());
+            }
+
+            bool Refract(const Ray &in, Ray &out) const
+            {
+                return !mMaterial ? false :
+                        mMaterial->Refraction(in.GetDirection(),
+                                              GetNormal(out.GetOrigin()),
+                                              out.GetDirection());
+            }
+
             void SetMaterial(const Material *mat) {mMaterial = mat;}
+
+            const Material* GetMaterial() const {return mMaterial;}
     private:
         const Material *mMaterial;
     };

@@ -5,12 +5,9 @@
 
 #include <glm/fwd.hpp>
 
-#include "Ray.hh"
-
 namespace yacre
 {
-    class Material
-    {
+    class Material {
         public:
             virtual ~Material() = default;
 

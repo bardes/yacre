@@ -3,15 +3,17 @@
 
 #include <glm/glm.hpp>
 
-#include "Object.cc"
+#include "Object.hh"
 
 namespace yacre
 {
-    class Camera : Object
+    class Camera : public Object
     {
     public:
         Camera(unsigned w, unsigned h, float fov = glm::half_pi<float>()):
         mFov(fov), mResolution(w, h) {}
+        Camera(const glm::uvec2 &res, float fov = glm::half_pi<float>()):
+        mFov(fov), mResolution(res) {}
 
         virtual ~Camera() = default;
 

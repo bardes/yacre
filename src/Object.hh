@@ -1,7 +1,8 @@
 #ifndef OBJECT_HH_NOMGP0DN
 #define OBJECT_HH_NOMGP0DN
 
-#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace yacre
 {
@@ -16,28 +17,19 @@ namespace yacre
 
             void SetPosition(const glm::vec3 &p) {mPosition = p;}
             void SetSacale(float s) {mScale = s;}
-            void SetOrientation(const glm::vec3 &axis, float angle)
-            {
-                mAxis = axis;
-                mAngle = angle;
-            }
+            void SetOrientation(const glm::quat &o) {mOrientation = o;}
+            void SetOrientation(const glm::vec3 &axis, float angle);
+
 
             glm::vec3 GetPosition() const {return mPosition;}
             float GetSacale() const {return mScale;}
-            glm::vec3 GetUpVector() const {return mAxis;}
-            float GetAngle() const {return mAngle;}
-            void GetOrientation(glm::vec3 &axis, float angle) const
-            {
-                axis = mAxis;
-                angle = mAngle;
-            }
+            glm::quat GetOrientation() const {return mOrientation;}
 
         private:
             //Transformations
             glm::vec3 mPosition;
             float mScale;
-            glm::vec3 mAxis; //Should be normalized
-            float mAngle;
+            glm::quat mOrientation;
 
     };
 }

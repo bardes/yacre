@@ -3,7 +3,7 @@
 
 #include <glm/fwd.hpp>
 
-#include "Primitive.hh"
+#include "../Primitive.hh"
 
 namespace yacre
 {
@@ -11,8 +11,8 @@ namespace yacre
         public:
             Sphere(const glm::vec3 &pos, float radius);
 
-            virtual bool CheckInstersection(const Ray& r,
-                                            glm::vec3& point) const;
+            virtual float CheckInstersection(const Ray& r) const;
+
             virtual glm::vec3 GetNormal(const glm::vec3& point) const
             {
                 return point - GetPosition();

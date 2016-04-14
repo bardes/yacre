@@ -5,13 +5,14 @@
 
 #include <utility>
 
-#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
 
 namespace yacre
 {
     class Diffuse : public Material {
     public:
-        Diffuse(const glm::vec3 &&color) : mColor(std::move(color)) {}
+        Diffuse(glm::vec3 &&color) : mColor(std::move(color)) {}
+        Diffuse(const glm::vec3 &color) : mColor(color) {}
         virtual ~Diffuse() = default;
 
         virtual glm::vec3 ComputeColor(const glm::vec3& inc,

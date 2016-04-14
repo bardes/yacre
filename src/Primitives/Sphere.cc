@@ -5,7 +5,7 @@
 
 #include <glm/glm.hpp>
 
-yacre::Sphere::Sphere(const glm::vec3& pos, float radius)
+yacre::Sphere::Sphere(const glm::vec3& pos, float radius) : Primitive()
 {
     mRadiusSq = radius * radius;
     SetPosition(pos);
@@ -27,23 +27,17 @@ static bool solveQuadratic(float b, float c, float &x0, float &x1)
     return true;
 }
 
-bool
-yacre::Sphere::CheckInstersection(const yacre::Ray& r, glm::vec3& point) const
+float yacre::Sphere::CheckInstersection(const yacre::Ray& r) const
 {
     glm::vec3 L = r.GetOrigin() - GetPosition();
     float b = 2.0f * glm::dot(r.GetDirection(), L);
-    float c = glm::dot(L, L) - mRadiusSq;
+    float c = glm::dot(L, L) - mRadiusSq * GetSacale();
+
+    if(b > 1) b*=2;
+    if(c > 1) b*=2;
 
     float x0, x1;
-    if(!solveQuadratic(b, c, x0, x1)) return false;
+    if(!solveQuadratic(b, c, x0, x1)) return 0.f;
 
-    if(x0 > 0) {
-        point = r.GetDirection() * x0;
-        return true;
-    } else if (x1 > 0) {
-        point = r.GetDirection() * x1;
-        return true;
-    }
-
-    return false;
+    return x0 > 0 ? x0 : x1;
 }
