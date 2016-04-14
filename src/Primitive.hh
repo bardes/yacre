@@ -13,7 +13,7 @@ namespace yacre
     class Primitive : public Object {
         public:
             Primitive(const Material *mat = nullptr):
-            mMaterial(mat), Object() {}
+            Object(), mMaterial(mat) {}
             virtual ~Primitive() = default;
 
             virtual float

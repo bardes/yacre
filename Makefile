@@ -37,6 +37,9 @@ DEPS = $(SRCS:=.dep)
 # Alvo padrao do make
 all: $(EXEC)
 
+noopdebug: CXXFLAGS += -g -O0
+noopdebug: CPPFLAGS += -DDEBUG
+noopdebug: all
 debug: CXXFLAGS += -g -Og
 debug: CPPFLAGS += -DDEBUG
 debug: all

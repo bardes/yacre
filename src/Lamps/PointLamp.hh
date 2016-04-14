@@ -12,10 +12,10 @@ namespace yacre
     class PointLamp : public Lamp
     {
         public:
-            PointLamp(const glm::vec3 &intensity): mIntensity(intensity) {}
-            PointLamp(glm::vec3 &&intensity):mIntensity(std::move(intensity)){}
+            PointLamp(const glm::vec3 &intensity):
+                Lamp(), mIntensity(intensity) {}
             virtual ~PointLamp() = default;
-    
+
             virtual glm::vec3 Shine(const glm::vec3& point) const;
 
         private:

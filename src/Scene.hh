@@ -17,7 +17,7 @@ namespace yacre
 {
     class Scene {
         public:
-            Scene(Camera *cam): mCamera(cam) {}
+            Scene(Camera *cam):mCamera(cam), mBackgroundColor(0), mBias(1e-4){}
             virtual ~Scene();
 
             void AddPrimitive(const std::string &name, Primitive *p);
@@ -25,11 +25,13 @@ namespace yacre
             void AddMaterial(const std::string &name, Material *m);
             void SetCamera(Camera *cam) {delete mCamera; mCamera = cam;}
             void SetBackgroundColor(glm::vec3 col) {mBackgroundColor = col;}
+            void SetBias(float b) {mBias = b;}
 
             Primitive* GetPrimitive(const std::string &name);
             Lamp* GetLamp(const std::string &name);
             Material* GetMaterial(const std::string &name);
             Camera* GetCamera() {return mCamera;}
+            float GetBias() {return mBias;}
 
             const Primitive* GetPrimitive(const std::string &name) const;
             const Lamp* GetLamp(const std::string &name) const;
@@ -79,7 +81,7 @@ namespace yacre
             Camera *mCamera;
 
             glm::vec3 mBackgroundColor;
-            static constexpr float mBias = 1e-4;
+            float mBias;
     };
 }
 #endif /* end of include guard: SCENE_HH_72UDZNZ5 */

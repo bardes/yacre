@@ -31,10 +31,7 @@ float yacre::Sphere::CheckInstersection(const yacre::Ray& r) const
 {
     glm::vec3 L = r.GetOrigin() - GetPosition();
     float b = 2.0f * glm::dot(r.GetDirection(), L);
-    float c = glm::dot(L, L) - mRadiusSq * GetSacale();
-
-    if(b > 1) b*=2;
-    if(c > 1) b*=2;
+    float c = glm::dot(L, L) - mRadiusSq;
 
     float x0, x1;
     if(!solveQuadratic(b, c, x0, x1)) return 0.f;

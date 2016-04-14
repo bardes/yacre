@@ -1,5 +1,7 @@
 #include "Scene.hh"
 
+#include <iostream>
+
 #include <glm/glm.hpp>
 
 void yacre::Scene::AddLamp(const std::string& name, yacre::Lamp* l)
@@ -129,11 +131,12 @@ yacre::Scene::Cast(const yacre::Ray& r, unsigned int bouncesLeft) const
     // Depth limit reached
     if(!bouncesLeft) return mBackgroundColor;
 
-    glm::vec3 color(0);
     float int_dist; // Intersection distance
     if(auto hit = Trace(r, int_dist)) {
         // Calculates the intersection point
         glm::vec3 point = r.GetOrigin() + r.GetDirection() * int_dist;
+
+        glm::vec3 color = hit->GetColor(point, r.GetDirection());
 
         // Reflection and refraction rays
         Ray rflec(point); Ray rfrac(point);
@@ -181,9 +184,9 @@ unsigned char* yacre::Scene::Render() const
     float aspect = res.x / (float) res.y;
 
     // Alloctes the pixel buffer
-    unsigned buff_len = res.x * res.y * 3;
-    auto fpix_buff = new float[buff_len]();
-    auto upix_buff = new unsigned char[buff_len];
+    unsigned buff_len = res.x * res.y;
+    auto fpix_buff = new glm::vec3[buff_len];
+    auto upix_buff = new unsigned char[buff_len * 3];
 
     // Calculates the fov aspect correction
     float fov = glm::tan(mCamera->GetFov() / 2);
@@ -195,11 +198,11 @@ unsigned char* yacre::Scene::Render() const
     for(auto lamp : mLamps) {
         for(unsigned line = 0; line < res.y; ++line) {
             // Calculates ray's y camera coordinate only once per line
-            float py = (1.f - 2.f * (line + .5f)) * fov;
-            unsigned line_offset = line * res.x * 3;
+            float py = (1.f - 2.f * (line + .5f) / res.y) * fov;
+            unsigned line_offset = line * res.x;
             for(unsigned col = 0; col < res.x; ++col) {
                 // Calculates the x camera coord
-                direction.x = (2.f * (col + .5f) - 1.f) * fov * aspect;
+                direction.x = (2.f * ((col + .5f) / res.x) - 1.f) * fov * aspect;
                 direction.y = py;
                 direction.z = -1.f;
 
@@ -209,19 +212,20 @@ unsigned char* yacre::Scene::Render() const
                 // Normalizes and sets the ray direction
                 r.SetDirection(glm::normalize(direction));
 
-                glm::vec3 color = Cast(r, 1) * 255.f;
-                fpix_buff[line_offset + col + 0] += color.r;
-                fpix_buff[line_offset + col + 1] += color.g;
-                fpix_buff[line_offset + col + 2] += color.b;
+                fpix_buff[line_offset + col] = Cast(r, 1) * 255.f;
             }
         }
     }
 
     // Converts the image to 8 bit RGB
-    for(unsigned i = 0; i < buff_len; ++i) {
-        upix_buff[i] = glm::clamp((unsigned char)(fpix_buff[i] / mLamps.size()),
-                                  (unsigned char) 0, (unsigned char) 255);
+    for(unsigned i = 0; i < buff_len * 3; i += 3) {
+        fpix_buff[i/3] /= (float) mLamps.size();
+        glm::vec3 c = glm::clamp(fpix_buff[i/3], 0.f, 255.f);
+        upix_buff[i + 0] = c.r;
+        upix_buff[i + 1] = c.g;
+        upix_buff[i + 2] = c.b;
     }
+
     delete[] fpix_buff;
     return upix_buff;
 }

@@ -11,8 +11,7 @@ namespace yacre
 {
     class Diffuse : public Material {
     public:
-        Diffuse(glm::vec3 &&color) : mColor(std::move(color)) {}
-        Diffuse(const glm::vec3 &color) : mColor(color) {}
+        Diffuse(const glm::vec3 &color) : Material(), mColor(color) {}
         virtual ~Diffuse() = default;
 
         virtual glm::vec3 ComputeColor(const glm::vec3& inc,
