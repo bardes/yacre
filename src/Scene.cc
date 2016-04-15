@@ -136,7 +136,19 @@ yacre::Scene::Cast(const yacre::Ray& r, unsigned int bouncesLeft) const
         // Calculates the intersection point
         glm::vec3 point = r.GetOrigin() + r.GetDirection() * int_dist;
 
-        glm::vec3 color = hit->GetColor(point, r.GetDirection());
+        glm::vec3 obj_color = hit->GetColor(point, r.GetDirection());
+        glm::vec3 color(0);
+        for(auto it : mLamps) {
+            const Lamp* lamp = it.second;
+            Ray shadow(point, glm::normalize(lamp->GetPosition() -
+                                             hit->GetPosition()));
+            shadow.GetOrigin() += shadow.GetDirection() * mBias;
+            float distance;
+            if(!Trace(shadow, distance)) {
+                color += obj_color * lamp->Shine(point) *
+                        glm::dot(shadow.GetDirection(), hit->GetNormal(point));
+            }
+        }
 
         // Reflection and refraction rays
         Ray rflec(point); Ray rfrac(point);
@@ -144,11 +156,11 @@ yacre::Scene::Cast(const yacre::Ray& r, unsigned int bouncesLeft) const
         // Tries to reflec and refract the ray
         if(hit->Reflect(r, rflec)) {
             rflec.GetOrigin() += rflec.GetDirection() * mBias;
-            color += Cast(rflec, bouncesLeft - 1);
+            color += obj_color * Cast(rflec, bouncesLeft - 1);
         }
         if(hit->Reflect(r, rfrac)) {
             rfrac.GetOrigin() += rfrac.GetDirection() * mBias;
-            color += Cast(rfrac, bouncesLeft - 1);
+            color += obj_color * Cast(rfrac, bouncesLeft - 1);
         }
 
         return color;
@@ -194,33 +206,31 @@ unsigned char* yacre::Scene::Render() const
     // Creates the direction vector
     glm::vec3 direction;
 
-    // Samples each pixel once for every lamp
-    for(auto lamp : mLamps) {
-        for(unsigned line = 0; line < res.y; ++line) {
-            // Calculates ray's y camera coordinate only once per line
-            float py = (1.f - 2.f * (line + .5f) / res.y) * fov;
-            unsigned line_offset = line * res.x;
-            for(unsigned col = 0; col < res.x; ++col) {
-                // Calculates the x camera coord
-                direction.x = (2.f * ((col + .5f) / res.x) - 1.f) * fov * aspect;
-                direction.y = py;
-                direction.z = -1.f;
+    // Samples each pixel once
+    for(unsigned line = 0; line < res.y; ++line) {
+        // Calculates ray's y camera coordinate only once per line
+        float py = (1.f - 2.f * (line + .5f) / res.y) * fov;
+        unsigned line_offset = line * res.x;
+        for(unsigned col = 0; col < res.x; ++col) {
+            // Calculates the x camera coord
+            direction.x = (2.f * ((col + .5f) / res.x) - 1.f) * fov * aspect;
+            direction.y = py;
+            direction.z = -1.f;
 
-                // Converts to world coordinates
-                direction = direction * mCamera->GetOrientation();
+            // Converts to world coordinates
+            direction = direction * mCamera->GetOrientation();
 
-                // Normalizes and sets the ray direction
-                r.SetDirection(glm::normalize(direction));
+            // Normalizes and sets the ray direction
+            r.SetDirection(glm::normalize(direction));
 
-                fpix_buff[line_offset + col] = Cast(r, 1) * 255.f;
-            }
+            fpix_buff[line_offset + col] = Cast(r, 1);
         }
     }
 
     // Converts the image to 8 bit RGB
     for(unsigned i = 0; i < buff_len * 3; i += 3) {
-        fpix_buff[i/3] /= (float) mLamps.size();
-        glm::vec3 c = glm::clamp(fpix_buff[i/3], 0.f, 255.f);
+        fpix_buff[i/3] = glm::pow(fpix_buff[i/3], glm::vec3(1/2.2f));
+        glm::vec3 c = glm::clamp(fpix_buff[i/3] * 255.f, 0.f, 255.f);
         upix_buff[i + 0] = c.r;
         upix_buff[i + 1] = c.g;
         upix_buff[i + 2] = c.b;

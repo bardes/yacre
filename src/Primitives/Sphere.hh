@@ -15,7 +15,7 @@ namespace yacre
 
             virtual glm::vec3 GetNormal(const glm::vec3& point) const
             {
-                return point - GetPosition();
+                return glm::normalize(point - GetPosition());
             }
 
         private:
