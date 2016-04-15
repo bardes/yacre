@@ -140,8 +140,7 @@ yacre::Scene::Cast(const yacre::Ray& r, unsigned int bouncesLeft) const
         glm::vec3 color(0);
         for(auto it : mLamps) {
             const Lamp* lamp = it.second;
-            Ray shadow(point, glm::normalize(lamp->GetPosition() -
-                                             hit->GetPosition()));
+            Ray shadow(point, glm::normalize(lamp->GetPosition() - point));
             shadow.GetOrigin() += shadow.GetDirection() * mBias;
             float distance;
             if(!Trace(shadow, distance)) {
