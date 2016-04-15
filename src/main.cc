@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     p = new yacre::Sphere(glm::vec3(-.7, 0, 1), .25);
     p->SetMaterial(s.GetMaterial("Branco"));
     s.AddPrimitive("Bolota-2", p);
-    p = new yacre::Sphere(glm::vec3(0, -101, 0), 100);
+    p = new yacre::Sphere(glm::vec3(0, -1001, 0), 1000);
     p->SetMaterial(s.GetMaterial("Branco"));
     s.AddPrimitive("Bolota-3", p);
 

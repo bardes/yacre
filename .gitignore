@@ -3,6 +3,7 @@
 *.o
 *.dep
 *.swp
+*.p[pgb]m
 tests/
 info/
 bin/

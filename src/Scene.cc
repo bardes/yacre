@@ -196,7 +196,7 @@ unsigned char* yacre::Scene::Render() const
 
     // Alloctes the pixel buffer
     unsigned buff_len = res.x * res.y;
-    auto fpix_buff = new glm::vec3[buff_len];
+    auto fpix_buff = new glm::vec3[buff_len]();
     auto upix_buff = new unsigned char[buff_len * 3];
 
     // Calculates the fov aspect correction
@@ -206,14 +206,17 @@ unsigned char* yacre::Scene::Render() const
     glm::vec3 direction;
 
     // Samples each pixel once
+    unsigned nsamples = 1;
+    for(unsigned sample = 0; sample < nsamples; ++sample)
     for(unsigned line = 0; line < res.y; ++line) {
         // Calculates ray's y camera coordinate only once per line
-        float py = (1.f - 2.f * (line + .5f) / res.y) * fov;
         unsigned line_offset = line * res.x;
         for(unsigned col = 0; col < res.x; ++col) {
             // Calculates the x camera coord
-            direction.x = (2.f * ((col + .5f) / res.x) - 1.f) * fov * aspect;
-            direction.y = py;
+            float rx = Material::GetRandomNumber();
+            float ry = Material::GetRandomNumber();
+            direction.x = (2.f * ((col + rx) / res.x) - 1.f) * fov * aspect;
+            direction.y = (1.f - 2.f * (line + ry) / res.y) * fov;
             direction.z = -1.f;
 
             // Converts to world coordinates
@@ -222,12 +225,13 @@ unsigned char* yacre::Scene::Render() const
             // Normalizes and sets the ray direction
             r.SetDirection(glm::normalize(direction));
 
-            fpix_buff[line_offset + col] = Cast(r, 1);
+            fpix_buff[line_offset + col] += Cast(r, 1);
         }
     }
 
     // Converts the image to 8 bit RGB
     for(unsigned i = 0; i < buff_len * 3; i += 3) {
+        fpix_buff[i/3] /= (float) nsamples;
         fpix_buff[i/3] = glm::pow(fpix_buff[i/3], glm::vec3(1/2.2f));
         glm::vec3 c = glm::clamp(fpix_buff[i/3] * 255.f, 0.f, 255.f);
         upix_buff[i + 0] = c.r;
