@@ -17,7 +17,7 @@ namespace yacre
 {
     class Scene {
         public:
-            Scene(Camera *cam):mCamera(cam), mBackgroundColor(0), mBias(1e-4){}
+            Scene(Camera *cam):mCamera(cam), mBackgroundColor(0), mBias(1e-3){}
             virtual ~Scene();
 
             void AddPrimitive(const std::string &name, Primitive *p);
