@@ -12,7 +12,7 @@ WARNINGS = -pedantic -Wall -Wextra -Wcast-align -Wcast-qual \
 	   -Wstrict-overflow=5 -Wswitch-default -Wundef -Wunused -Winvalid-pch
 
 # Flags usadas durante a compilacao
-CXXFLAGS = $(WARNINGS) -std=c++11 -march=native -O2
+CXXFLAGS = $(WARNINGS) -std=c++11 -march=native -O2 -fopenmp
 
 # Flags de preprocessamento
 CPPFLAGS = -DGLM_FORCE_CXX11

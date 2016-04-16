@@ -15,7 +15,7 @@ static void WritePgm(const unsigned char *pixels, unsigned w, unsigned h)
 
 int main(int argc, char *argv[])
 {
-    auto res = glm::uvec2(4096, 2160) / 8u;
+    auto res = glm::vec2(4096, 2160) / (float)atof(argv[1]);
     float fov = glm::radians<float>(60.0f);
     yacre::Scene s(new yacre::Camera(res, fov));
     s.GetCamera()->SetPosition(glm::vec3(0, 0, 3));

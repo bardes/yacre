@@ -1,6 +1,7 @@
 #include "Scene.hh"
 
 #include <iostream>
+#include <omp.h>
 
 #include <glm/glm.hpp>
 
@@ -187,9 +188,6 @@ yacre::Scene::Trace(const yacre::Ray& r, float& distance) const
 
 unsigned char* yacre::Scene::Render() const
 {
-    // Creates a ray with the origin at the camera and a null direction
-    Ray r(mCamera->GetPosition());
-
     // Takes the camera resolution and calculates the aspect ratio
     glm::uvec2 res = mCamera->GetResolution();
     float aspect = res.x / (float) res.y;
@@ -202,30 +200,29 @@ unsigned char* yacre::Scene::Render() const
     // Calculates the fov aspect correction
     float fov = glm::tan(mCamera->GetFov() / 2);
 
-    // Creates the direction vector
-    glm::vec3 direction;
-
     // Samples each pixel once
     unsigned nsamples = 1;
-    for(unsigned sample = 0; sample < nsamples; ++sample)
-    for(unsigned line = 0; line < res.y; ++line) {
-        // Calculates ray's y camera coordinate only once per line
-        unsigned line_offset = line * res.x;
-        for(unsigned col = 0; col < res.x; ++col) {
-            // Calculates the x camera coord
-            float rx = Material::GetRandomNumber();
-            float ry = Material::GetRandomNumber();
-            direction.x = (2.f * ((col + rx) / res.x) - 1.f) * fov * aspect;
-            direction.y = (1.f - 2.f * (line + ry) / res.y) * fov;
-            direction.z = -1.f;
+    for(unsigned sample = 0; sample < nsamples; ++sample) {
+        #pragma omp parallel for schedule(static, 64)
+        for(unsigned line = 0; line < res.y; ++line) {
+            for(unsigned col = 0; col < res.x; ++col) {
+                // Used to sample randomly within each pixel's area
+                float rx = Material::GetRandomNumber();
+                float ry = Material::GetRandomNumber();
+                // Calculates the ray direction in camera coordinates
+                glm::vec3 direction;
+                direction.x = (2.f * ((col + rx) / res.x) - 1.f) * fov * aspect;
+                direction.y = (1.f - 2.f * (line + ry) / res.y) * fov;
+                direction.z = -1.f;
 
-            // Converts to world coordinates
-            direction = direction * mCamera->GetOrientation();
+                // Converts to world coordinates
+                direction = direction * mCamera->GetOrientation();
 
-            // Normalizes and sets the ray direction
-            r.SetDirection(glm::normalize(direction));
+                // Creates the ray with a normalized direction
+                Ray r(mCamera->GetPosition(), glm::normalize(direction));
 
-            fpix_buff[line_offset + col] += Cast(r, 1);
+                fpix_buff[line * res.x + col] += Cast(r, 1);
+            }
         }
     }
 
