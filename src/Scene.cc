@@ -201,7 +201,7 @@ unsigned char* yacre::Scene::Render() const
     float fov = glm::tan(mCamera->GetFov() / 2);
 
     // Samples each pixel once
-    unsigned nsamples = 1;
+    unsigned nsamples = 32;
     for(unsigned sample = 0; sample < nsamples; ++sample) {
         #pragma omp parallel for schedule(static, 64)
         for(unsigned line = 0; line < res.y; ++line) {
