@@ -1,4 +1,5 @@
 #include "Plane.hh"
+#include "Disk.hh"
 
 #include <cmath>
 #include <utility>
