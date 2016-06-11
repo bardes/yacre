@@ -15,10 +15,10 @@ WARNINGS = -pedantic -Wall -Wextra -Wcast-align -Wcast-qual \
 CXXFLAGS = $(WARNINGS) -std=c++11 -march=native -O2 -fopenmp
 
 # Flags de preprocessamento
-CPPFLAGS = -DGLM_FORCE_CXX11
+CPPFLAGS = -DGLM_FORCE_CXX11 $(shell pkg-config --cflags sfml-graphics)
 
 # Flags usado durante a linkagem
-LDFLAGS =
+LDFLAGS = $(shell pkg-config --libs sfml-graphics)
 
 # Arquivos com codigo fonte
 SRCS = $(shell find src -name '*.cc')

@@ -44,7 +44,13 @@ namespace yacre
             bool RemoveLamp(const std::string &name);
             bool RemoveMaterial(const std::string &name);
 
-            unsigned char* Render() const;
+            /**
+             * Renders one pass into the buffer.
+             *
+             * The buffer must be big enough to contain all the pixels. Note
+             * that the pixels are *ADDED* to the buffer, not overlaid!
+             */
+            void Render(glm::vec3* buffer) const;
 
         private:
             /**

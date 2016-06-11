@@ -1,21 +1,22 @@
 #include <iostream>
+
 #include <glm/glm.hpp>
 
+#include <SFML/Graphics.hpp>
+
 #include "Scene.hh"
+#include "RenderView.hh"
 
 #include "Primitives/Sphere.hh"
 #include "Materials/Diffuse.hh"
 #include "Lamps/PointLamp.hh"
 
-static void WritePgm(const unsigned char *pixels, unsigned w, unsigned h)
-{
-    std::cout << "P6\n" << w << " " << h << "\n255\n";
-    std::cout.write((const char*) pixels, w * h * 3);
-}
-
 int main(int argc, char *argv[])
 {
-    auto res = glm::vec2(4096, 2160) / (float)atof(argv[1]);
+    auto res = glm::vec2(sf::VideoMode::getDesktopMode().width,
+                         sf::VideoMode::getDesktopMode().height);
+    res /= (float) atof(argv[1]);
+
     float fov = glm::radians<float>(60.0f);
     yacre::Scene s(new yacre::Camera(res, fov));
     s.GetCamera()->SetPosition(glm::vec3(0, 0, 3));
@@ -29,7 +30,7 @@ int main(int argc, char *argv[])
     p->SetMaterial(s.GetMaterial("Branco"));
     s.AddPrimitive("Bolota", p);
     p = new yacre::Sphere(glm::vec3(-.7, 0, 1), .25);
-    p->SetMaterial(s.GetMaterial("Branco"));
+    p->SetMaterial(s.GetMaterial("Vermelho"));
     s.AddPrimitive("Bolota-2", p);
     p = new yacre::Sphere(glm::vec3(0, -1001, 0), 1000);
     p->SetMaterial(s.GetMaterial("Branco"));
@@ -64,10 +65,10 @@ int main(int argc, char *argv[])
                 w.close();
         }
 
-        rv.RenderPasses(10);
+        rv.RenderPasses(1);
         w.draw(RenderSprite);
         w.display();
-        n += 10;
+        n++;
     }
 
     std::cout << "Passes: " << n << std::endl;

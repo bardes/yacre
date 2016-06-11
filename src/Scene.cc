@@ -186,56 +186,35 @@ yacre::Scene::Trace(const yacre::Ray& r, float& distance) const
     return hit;
 }
 
-unsigned char* yacre::Scene::Render() const
+void yacre::Scene::Render(glm::vec3 *buffer) const
 {
     // Takes the camera resolution and calculates the aspect ratio
     glm::uvec2 res = mCamera->GetResolution();
     float aspect = res.x / (float) res.y;
 
-    // Alloctes the pixel buffer
-    unsigned buff_len = res.x * res.y;
-    auto fpix_buff = new glm::vec3[buff_len]();
-    auto upix_buff = new unsigned char[buff_len * 3];
-
     // Calculates the fov aspect correction
     float fov = glm::tan(mCamera->GetFov() / 2);
 
     // Samples each pixel once
-    unsigned nsamples = 32;
-    for(unsigned sample = 0; sample < nsamples; ++sample) {
-        #pragma omp parallel for schedule(static, 64)
-        for(unsigned line = 0; line < res.y; ++line) {
-            for(unsigned col = 0; col < res.x; ++col) {
-                // Used to sample randomly within each pixel's area
-                float rx = Material::GetRandomNumber();
-                float ry = Material::GetRandomNumber();
-                // Calculates the ray direction in camera coordinates
-                glm::vec3 direction;
-                direction.x = (2.f * ((col + rx) / res.x) - 1.f) * fov * aspect;
-                direction.y = (1.f - 2.f * (line + ry) / res.y) * fov;
-                direction.z = -1.f;
+    #pragma omp parallel for schedule(static, 64)
+    for(unsigned line = 0; line < res.y; ++line) {
+        for(unsigned col = 0; col < res.x; ++col) {
+            // Used to sample randomly within each pixel's area
+            float rx = Material::GetRandomNumber();
+            float ry = Material::GetRandomNumber();
+            // Calculates the ray direction in camera coordinates
+            glm::vec3 direction;
+            direction.x = (2.f * ((col + rx) / res.x) - 1.f) * fov * aspect;
+            direction.y = (1.f - 2.f * (line + ry) / res.y) * fov;
+            direction.z = -1.f;
 
-                // Converts to world coordinates
-                direction = direction * mCamera->GetOrientation();
+            // Converts to world coordinates
+            direction = direction * mCamera->GetOrientation();
 
-                // Creates the ray with a normalized direction
-                Ray r(mCamera->GetPosition(), glm::normalize(direction));
+            // Creates the ray with a normalized direction
+            Ray r(mCamera->GetPosition(), glm::normalize(direction));
 
-                fpix_buff[line * res.x + col] += Cast(r, 1);
-            }
+            buffer[line * res.x + col] += Cast(r, 1);
         }
     }
-
-    // Converts the image to 8 bit RGB
-    for(unsigned i = 0; i < buff_len * 3; i += 3) {
-        fpix_buff[i/3] /= (float) nsamples;
-        fpix_buff[i/3] = glm::pow(fpix_buff[i/3], glm::vec3(1/2.2f));
-        glm::vec3 c = glm::clamp(fpix_buff[i/3] * 255.f, 0.f, 255.f);
-        upix_buff[i + 0] = c.r;
-        upix_buff[i + 1] = c.g;
-        upix_buff[i + 2] = c.b;
-    }
-
-    delete[] fpix_buff;
-    return upix_buff;
 }
