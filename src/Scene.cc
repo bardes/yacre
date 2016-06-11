@@ -158,7 +158,8 @@ yacre::Scene::Cast(const yacre::Ray& r, unsigned int bouncesLeft) const
         // Tries to reflec and refract the ray
         if(hit->Reflect(r, rflec)) {
             rflec.GetOrigin() += rflec.GetDirection() * mBias;
-            color += obj_color * Cast(rflec, bouncesLeft - 1);
+            color += obj_color * Cast(rflec, bouncesLeft - 1) *
+            glm::dot(rflec.GetDirection(), hit->GetNormal(point));
         }
         if(hit->Reflect(r, rfrac)) {
             rfrac.GetOrigin() += rfrac.GetDirection() * mBias;
