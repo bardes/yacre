@@ -22,7 +22,8 @@ int main(int argc, char *argv[])
 
     s.SetBackgroundColor(glm::vec3(0, 0, 0));
 
-    s.AddMaterial("Branco", new yacre::Diffuse(glm::vec3(1)));
+    s.AddMaterial("Branco", new yacre::Diffuse(glm::vec3(.8)));
+    s.AddMaterial("Vermelho", new yacre::Diffuse(glm::vec3(.8,0,0)));
 
     auto p = new yacre::Sphere(glm::vec3(0), 1);
     p->SetMaterial(s.GetMaterial("Branco"));
@@ -44,9 +45,35 @@ int main(int argc, char *argv[])
     l->SetPosition(glm::vec3(0, 2, 2));
     s.AddLamp("Lampadinha-3", l);
 
-    auto buff = s.Render();
-    WritePgm(buff, res.x, res.y);
-    delete[] buff;
+    yacre::RenderView rv(s);
+    auto RenderSprite = rv.GetRender();
+
+    sf::RenderWindow w(sf::VideoMode(res.x, res.y), "YACRE - Render View");
+
+    unsigned n = 0;
+    while(w.isOpen()) {
+        // Process events
+        sf::Event event;
+        while (w.pollEvent(event))
+        {
+            // Close window: exit
+            if (event.type == sf::Event::Closed)
+                w.close();
+            else if(event.type == sf::Event::KeyPressed &&
+                    event.key.code == sf::Keyboard::Escape)
+                w.close();
+        }
+
+        rv.RenderPasses(10);
+        w.draw(RenderSprite);
+        w.display();
+        n += 10;
+    }
+
+    std::cout << "Passes: " << n << std::endl;
+
+    if(argc > 2)
+        RenderSprite.getTexture()->copyToImage().saveToFile(argv[2]);
 
     return 0;
 }
