@@ -5,6 +5,8 @@
 
 #include <glm/glm.hpp>
 
+#include <glm/gtc/random.hpp>
+
 void yacre::Scene::AddLamp(const std::string& name, yacre::Lamp* l)
 {
     auto target = mLamps.find(name);
@@ -200,8 +202,9 @@ void yacre::Scene::Render(glm::vec3 *buffer) const
     for(unsigned line = 0; line < res.y; ++line) {
         for(unsigned col = 0; col < res.x; ++col) {
             // Used to sample randomly within each pixel's area
-            float rx = Material::GetRandomNumber();
-            float ry = Material::GetRandomNumber();
+            float rx = glm::linearRand<float>(0.f, 1.f);
+            float ry = glm::linearRand<float>(0.f, 1.f);
+           
             // Calculates the ray direction in camera coordinates
             glm::vec3 direction;
             direction.x = (2.f * ((col + rx) / res.x) - 1.f) * fov * aspect;
@@ -214,7 +217,7 @@ void yacre::Scene::Render(glm::vec3 *buffer) const
             // Creates the ray with a normalized direction
             Ray r(mCamera->GetPosition(), glm::normalize(direction));
 
-            buffer[line * res.x + col] += Cast(r, 1);
+            buffer[line * res.x + col] += Cast(r, 3);
         }
     }
 }

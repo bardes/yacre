@@ -11,12 +11,6 @@ namespace yacre
         public:
             virtual ~Material() = default;
 
-            static void SetSeed(unsigned seed = 0);
-            static float GetRandomNumber()
-            {
-                return std::generate_canonical<float, 16>(sRandGen);
-            }
-
             virtual glm::vec3 ComputeColor(const glm::vec3 &inc,
                                            const glm::vec3 &normal) const = 0;
 
@@ -27,8 +21,6 @@ namespace yacre
             virtual bool Refraction(const glm::vec3 &in,
                                     const glm::vec3 &normal,
                                     glm::vec3 &out) const = 0;
-        private:
-            static std::mt19937 sRandGen;
     };
 } /* yacre */
 

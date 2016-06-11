@@ -1,15 +1,11 @@
 #include "Diffuse.hh"
-#include<glm/gtc/constants.hpp>
+
+#include <glm/gtc/random.hpp>
 
 bool yacre::Diffuse::Reflection(const glm::vec3& in, const glm::vec3& normal,
                                 glm::vec3& out) const
 {
-    float u = yacre::Material::GetRandomNumber();
-    float r = glm::sqrt(u);
-    float t = glm::two_pi<float>() * yacre::Material::GetRandomNumber();
-
-    out.x = r * glm::cos(t);
-    out.y = r * glm::sin(t);
-    out.z = glm::sqrt(1.0f - u);
+    out = glm::sphericalRand(1.0f);
+    if(glm::dot(out, normal) < 0) out *= -1;
     return true;
 }
