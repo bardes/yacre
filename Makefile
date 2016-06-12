@@ -32,7 +32,7 @@ OBJS = $(SRCS:=.o)
 DEPS = $(SRCS:=.dep)
 
 # Alvos que nao devem ser representados por arquivos
-.PHONY: clean all run zip debug
+.PHONY: clean all run zip debug noopdebug profile
 
 # Alvo padrao do make
 all: $(EXEC)
@@ -43,6 +43,8 @@ noopdebug: all
 debug: CXXFLAGS += -g -Og
 debug: CPPFLAGS += -DDEBUG
 debug: all
+profile: CXXFLAGS += -g -pg -O3
+profile: all
 
 # Faz a linkagem e cria o executavel
 $(EXEC): $(OBJS)
