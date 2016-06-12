@@ -49,7 +49,10 @@ int main(int argc, char *argv[])
     yacre::RenderView rv(s);
     auto RenderSprite = rv.GetRender();
 
-    sf::RenderWindow w(sf::VideoMode(res.x, res.y), "YACRE - Render View");
+    sf::RenderWindow w(sf::VideoMode(res.x, res.y), "YACRE - Render View",
+                       sf::Style::None);
+    w.clear(sf::Color::Black);
+    w.display();
 
     unsigned n = 0;
     while(w.isOpen()) {
