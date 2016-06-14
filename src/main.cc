@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     std::cout << "Passes: " << n << std::endl;
 
     if(argc > 3)
-        RenderSprite.getTexture()->copyToImage().saveToFile(argv[2]);
+        RenderSprite.getTexture()->copyToImage().saveToFile(argv[3]);
 
     return 0;
 }
