@@ -35,3 +35,11 @@ opcional. Os argumentos são:
   - **saida.formato**: Quando definido este argumento salva a imagem
     renderizada com o nome dado. O formato da imagem é determinado através da
     extensão.
+
+Está tambpem disponível um [vídeo](https://www.youtube.com/watch?v=VcPYn3cR_sE)
+exemplo ilustrando os poassos aqui descritos.
+
+## Integrantes
+  - Ana Caroline F. Spengler
+  - Renato Seiji Goto
+  - Paulo B. N. Nascimento
