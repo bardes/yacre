@@ -9,6 +9,7 @@
 
 #include "Primitives/Sphere.hh"
 #include "Materials/Diffuse.hh"
+#include "Materials/Mirror.hh"
 #include "Lamps/PointLamp.hh"
 
 int main(int argc, char *argv[])
@@ -24,10 +25,11 @@ int main(int argc, char *argv[])
     s.SetBackgroundColor(glm::vec3(0, 0, 0));
 
     s.AddMaterial("Branco", new yacre::Diffuse(glm::vec3(.8)));
+    s.AddMaterial("Mirr", new yacre::Mirror(glm::vec3(1), .05));
     s.AddMaterial("Vermelho", new yacre::Diffuse(glm::vec3(.8,0,0)));
 
     auto p = new yacre::Sphere(glm::vec3(0), 1);
-    p->SetMaterial(s.GetMaterial("Branco"));
+    p->SetMaterial(s.GetMaterial("Mirr"));
     s.AddPrimitive("Bolota", p);
     p = new yacre::Sphere(glm::vec3(-.7, 0, 1), .25);
     p->SetMaterial(s.GetMaterial("Vermelho"));

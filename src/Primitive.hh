@@ -29,9 +29,16 @@ namespace yacre
                        glm::vec3(0);
             }
 
-            bool Reflect(const Ray &in, Ray &out) const
+            float Diffuse(const Ray &in, const Ray &out) const
             {
-                return !mMaterial ? false :
+                return !mMaterial ? 0.f :
+                        mMaterial->Diffusion(in.GetDirection(),
+                                             GetNormal(out.GetOrigin()));
+            }
+
+            float Reflect(const Ray &in, Ray &out) const
+            {
+                return !mMaterial ? 0 :
                         mMaterial->Reflection(in.GetDirection(),
                                               GetNormal(out.GetOrigin()),
                                               out.GetDirection());
@@ -39,7 +46,7 @@ namespace yacre
 
             bool Refract(const Ray &in, Ray &out) const
             {
-                return !mMaterial ? false :
+                return !mMaterial ? 0 :
                         mMaterial->Refraction(in.GetDirection(),
                                               GetNormal(out.GetOrigin()),
                                               out.GetDirection());

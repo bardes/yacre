@@ -147,7 +147,7 @@ yacre::Scene::Cast(const yacre::Ray& r, unsigned int bouncesLeft) const
             shadow.GetOrigin() += shadow.GetDirection() * mBias;
             float distance;
             if(!Trace(shadow, distance)) {
-                color += obj_color * lamp->Shine(point) *
+                color += hit->Diffuse(r, shadow) * lamp->Shine(point) *
                         glm::dot(shadow.GetDirection(), hit->GetNormal(point));
             }
         }
@@ -156,17 +156,18 @@ yacre::Scene::Cast(const yacre::Ray& r, unsigned int bouncesLeft) const
         Ray rflec(point); Ray rfrac(point);
 
         // Tries to reflec and refract the ray
-        if(hit->Reflect(r, rflec)) {
+        float rfl = hit->Reflect(r, rflec);
+        if(rfl > 0) {
             rflec.GetOrigin() += rflec.GetDirection() * mBias;
-            color += obj_color * Cast(rflec, bouncesLeft - 1) *
-            glm::dot(rflec.GetDirection(), hit->GetNormal(point));
+            color += rfl * Cast(rflec, bouncesLeft - 1);
         }
-        if(hit->Reflect(r, rfrac)) {
+        float rfr = hit->Reflect(r, rfrac);
+        if(rfr > 0) {
             rfrac.GetOrigin() += rfrac.GetDirection() * mBias;
-            color += obj_color * Cast(rfrac, bouncesLeft - 1);
+            color += rfr * Cast(rfrac, bouncesLeft - 1);
         }
 
-        return color;
+        return color * obj_color;
     }
 
     // No intersection
@@ -205,7 +206,7 @@ void yacre::Scene::Render(glm::vec3 *buffer) const
             // Used to sample randomly within each pixel's area
             float rx = glm::linearRand<float>(0.f, 1.f);
             float ry = glm::linearRand<float>(0.f, 1.f);
-           
+
             // Calculates the ray direction in camera coordinates
             glm::vec3 direction;
             direction.x = (2.f * ((col + rx) / res.x) - 1.f) * fov * aspect;

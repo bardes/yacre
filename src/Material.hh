@@ -14,11 +14,14 @@ namespace yacre
             virtual glm::vec3 ComputeColor(const glm::vec3 &inc,
                                            const glm::vec3 &normal) const = 0;
 
-            virtual bool Reflection(const glm::vec3 &in,
+            virtual float Diffusion(const glm::vec3 &inc,
+                                    const glm::vec3 &normal) const = 0;
+
+            virtual float Reflection(const glm::vec3 &in,
                                     const glm::vec3 &normal,
                                     glm::vec3 &out) const = 0;
 
-            virtual bool Refraction(const glm::vec3 &in,
+            virtual float Refraction(const glm::vec3 &in,
                                     const glm::vec3 &normal,
                                     glm::vec3 &out) const = 0;
     };

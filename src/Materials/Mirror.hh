@@ -1,5 +1,5 @@
-#ifndef DIFFUSE_HH_2STD36KV
-#define DIFFUSE_HH_2STD36KV
+#ifndef MIRROR_HH_YT780D1R
+#define MIRROR_HH_YT780D1R
 
 #include "../Material.hh"
 
@@ -9,10 +9,12 @@
 
 namespace yacre
 {
-    class Diffuse : public Material {
+    class Mirror : public Material {
     public:
-        Diffuse(const glm::vec3 &color) : Material(), mColor(color) {}
-        virtual ~Diffuse() = default;
+        Mirror(const glm::vec3 &color, float roughness):
+        mColor(color), mReflectiveness(roughness) {}
+
+        virtual ~Mirror() = default;
 
         virtual glm::vec3 ComputeColor(const glm::vec3&,
                                        const glm::vec3&) const
@@ -23,7 +25,7 @@ namespace yacre
         virtual float Diffusion(const glm::vec3&,
                                 const glm::vec3&) const
         {
-            return 1.0f;
+            return 1 - mReflectiveness;
         }
 
         virtual float Refraction(const glm::vec3&,
@@ -35,10 +37,15 @@ namespace yacre
 
         virtual float Reflection(const glm::vec3& in,
                                  const glm::vec3& normal,
-                                 glm::vec3& out) const;
+                                 glm::vec3& out) const
+        {
+            out = glm::reflect(in, normal);
+            return mReflectiveness;
+        }
     private:
         glm::vec3 mColor;
+        float mReflectiveness;
     };
 } /* yacre */
 
-#endif /* end of include guard: DIFFUSE_HH_2STD36KV */
+#endif /* end of include guard: MIRROR_HH_YT780D1R */
