@@ -5,9 +5,9 @@
 
 #include <glm/glm.hpp>
 
-yacre::Sphere::Sphere(const glm::vec3& pos, float radius) : Primitive()
+yacre::Sphere::Sphere(const glm::vec3& pos, float radius) : Primitive(),
+mRadius(radius), mRadiusSq(radius * radius)
 {
-    mRadiusSq = radius * radius;
     SetPosition(pos);
 }
 

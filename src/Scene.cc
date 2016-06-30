@@ -40,6 +40,17 @@ void yacre::Scene::AddMaterial(const std::string& name, yacre::Material* m)
     }
 }
 
+void yacre::Scene::AddTexture(const std::string& name, yacre::Texture* t)
+{
+    auto target = mTextures.find(name);
+    if(target != mTextures.end()) {
+        delete target->second;
+        target->second = t;
+    } else {
+        mTextures[name] = t;
+    }
+}
+
 const yacre::Lamp* yacre::Scene::GetLamp(const std::string& name) const
 {
     auto it = mLamps.find(name);
@@ -63,6 +74,19 @@ yacre::Material* yacre::Scene::GetMaterial(const std::string& name)
 {
     auto it = mMaterials.find(name);
     return it == mMaterials.end() ? NULL : it->second;
+}
+
+const yacre::Texture*
+yacre::Scene::GetTexture(const std::string& name) const
+{
+    auto it = mTextures.find(name);
+    return it == mTextures.end() ? NULL : it->second;
+}
+
+yacre::Texture* yacre::Scene::GetTexture(const std::string& name)
+{
+    auto it = mTextures.find(name);
+    return it == mTextures.end() ? NULL : it->second;
 }
 
 const yacre::Primitive*
@@ -111,6 +135,17 @@ bool yacre::Scene::RemoveMaterial(const std::string& name)
     return false;
 }
 
+bool yacre::Scene::RemoveTexture(const std::string& name)
+{
+    auto it = mTextures.find(name);
+    if(it != mTextures.end()) {
+        delete it->second;
+        mTextures.erase(it);
+        return true;
+    }
+    return false;
+}
+
 yacre::Scene::~Scene()
 {
     delete mCamera;
@@ -123,6 +158,10 @@ yacre::Scene::~Scene()
         pair.second = nullptr;
     }
     for(auto pair : mMaterials) {
+        delete pair.second;
+        pair.second = nullptr;
+    }
+    for(auto pair : mTextures) {
         delete pair.second;
         pair.second = nullptr;
     }
@@ -158,12 +197,12 @@ yacre::Scene::Cast(const yacre::Ray& r, unsigned int bouncesLeft) const
         // Tries to reflec and refract the ray
         float rfl = hit->Reflect(r, rflec);
         if(rfl > 0) {
-            rflec.GetOrigin() += rflec.GetDirection() * mBias;
+            rflec.GetOrigin() += hit->ComputeNormal(point) * mBias;
             color += rfl * Cast(rflec, bouncesLeft - 1);
         }
         float rfr = hit->Reflect(r, rfrac);
         if(rfr > 0) {
-            rfrac.GetOrigin() += rfrac.GetDirection() * mBias;
+            rfrac.GetOrigin() -= hit->ComputeNormal(point) * mBias;
             color += rfr * Cast(rfrac, bouncesLeft - 1);
         }
 

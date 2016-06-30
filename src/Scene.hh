@@ -8,6 +8,8 @@
 #include <glm/glm.hpp>
 
 #include "Object.hh"
+#include "Material.hh"
+#include "Texture.hh"
 #include "Primitive.hh"
 #include "Camera.hh"
 #include "Lamp.hh"
@@ -23,6 +25,7 @@ namespace yacre
             void AddPrimitive(const std::string &name, Primitive *p);
             void AddLamp(const std::string &name, Lamp* l);
             void AddMaterial(const std::string &name, Material *m);
+            void AddTexture(const std::string &name, Texture *m);
             void SetCamera(Camera *cam) {delete mCamera; mCamera = cam;}
             void SetBackgroundColor(glm::vec3 col) {mBackgroundColor = col;}
             void SetBias(float b) {mBias = b;}
@@ -30,12 +33,14 @@ namespace yacre
             Primitive* GetPrimitive(const std::string &name);
             Lamp* GetLamp(const std::string &name);
             Material* GetMaterial(const std::string &name);
+            Texture* GetTexture(const std::string &name);
             Camera* GetCamera() {return mCamera;}
             float GetBias() {return mBias;}
 
             const Primitive* GetPrimitive(const std::string &name) const;
             const Lamp* GetLamp(const std::string &name) const;
             const Material* GetMaterial(const std::string &name) const;
+            const Texture* GetTexture(const std::string &name) const;
             const Camera* GetCamera() const {return mCamera;}
             glm::vec3 GetBackgroundColor() const {return mBackgroundColor;}
 
@@ -43,6 +48,7 @@ namespace yacre
             bool RemovePrimitive(const std::string &name);
             bool RemoveLamp(const std::string &name);
             bool RemoveMaterial(const std::string &name);
+            bool RemoveTexture(const std::string &name);
 
             /**
              * Renders one pass into the buffer.
@@ -84,6 +90,7 @@ namespace yacre
             std::unordered_map<std::string, Primitive*> mPrimitives;
             std::unordered_map<std::string, Lamp*> mLamps;
             std::unordered_map<std::string, Material*> mMaterials;
+            std::unordered_map<std::string, Texture*> mTextures;
             Camera *mCamera;
 
             glm::vec3 mBackgroundColor;

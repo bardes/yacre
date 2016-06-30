@@ -5,6 +5,7 @@
 
 #include "Object.hh"
 #include "Material.hh"
+#include "Texture.hh"
 #include "Ray.hh"
 
 namespace yacre
@@ -12,21 +13,37 @@ namespace yacre
     struct Ray;
     class Primitive : public Object {
         public:
-            Primitive(const Material *mat = nullptr):
-            Object(), mMaterial(mat) {}
+            Primitive(): mMaterial(nullptr), mTexture(nullptr) {}
             virtual ~Primitive() = default;
 
             virtual float
             CheckInstersection(const Ray &r) const = 0;
 
-            virtual glm::vec3 GetNormal(const glm::vec3 &point) const = 0;
+            virtual glm::vec2 ComputeUV(const glm::vec3 &point) const = 0;
+
+            glm::vec3 GetNormal(const glm::vec3 &point) const
+            {
+                glm::vec3 normal = ComputeNormal(point);
+                if(mTexture && mTexture->HasNormal())
+                    normal = ComputeTangentSpace(point) *
+                             mTexture->ComputeNormal(ComputeUV(point));
+                return normal;
+            }
+
+            virtual glm::vec3 ComputeNormal(const glm::vec3 &point) const = 0;
+
+            virtual glm::mat3
+            ComputeTangentSpace(const glm::vec3& point) const = 0;
 
             glm::vec3
             GetColor(const glm::vec3 &point, const glm::vec3 &incidence) const
             {
-                return mMaterial ?
-                       mMaterial->ComputeColor(incidence, GetNormal(point)):
-                       glm::vec3(0);
+                if(mTexture && mTexture->HasColor())
+                    return mTexture->ComputeColor(ComputeUV(point));
+                else if (mMaterial)
+                    return mMaterial->ComputeColor(incidence, GetNormal(point));
+                else
+                    return glm::vec3(0);
             }
 
             float Diffuse(const Ray &in, const Ray &out) const
@@ -53,10 +70,14 @@ namespace yacre
             }
 
             void SetMaterial(const Material *mat) {mMaterial = mat;}
+            void SetTexture(const Texture *tex) {mTexture = tex;}
 
             const Material* GetMaterial() const {return mMaterial;}
+            const Texture* GetTexture() const {return mTexture;}
+
     private:
         const Material *mMaterial;
+        const Texture *mTexture;
     };
 }
 

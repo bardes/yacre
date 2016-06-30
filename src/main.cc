@@ -6,6 +6,7 @@
 
 #include "Scene.hh"
 #include "RenderView.hh"
+#include "Texture.hh"
 
 #include "Primitives/Sphere.hh"
 #include "Materials/Diffuse.hh"
@@ -32,19 +33,15 @@ int main(int argc, char *argv[])
 
     // Creates some materials
     s.AddMaterial("Branco", new yacre::Diffuse(glm::vec3(.8)));
-    s.AddMaterial("Mirr", new yacre::Mirror(glm::vec3(.2, 0, 1), .1));
-    s.AddMaterial("Vermelho", new yacre::Diffuse(glm::vec3(.8,0,0)));
 
-    // And some objects
-    auto p = new yacre::Sphere(glm::vec3(0), 1);
-    p->SetMaterial(s.GetMaterial("Mirr"));
-    s.AddPrimitive("Bolota", p);
-    p = new yacre::Sphere(glm::vec3(-.7, 0, 1), .25);
-    p->SetMaterial(s.GetMaterial("Vermelho"));
-    s.AddPrimitive("Bolota-2", p);
-    p = new yacre::Sphere(glm::vec3(0, -1001.1, 0), 1000);
+    // Creates a texture
+    s.AddTexture("Tex", new yacre::Texture(argv[3], argv[4]));
+
+    // Create a sphere
+    auto p = new yacre::Sphere(glm::vec3(0, 0, 0), 1.2);
     p->SetMaterial(s.GetMaterial("Branco"));
-    s.AddPrimitive("Bolota-3", p);
+    p->SetTexture(s.GetTexture("Tex"));
+    s.AddPrimitive("Bolota", p);
 
     // And a few lamps
     auto l = new yacre::PointLamp(glm::vec3(0,0,5));
@@ -90,8 +87,8 @@ int main(int argc, char *argv[])
 
     std::cout << "Passes: " << n << std::endl;
 
-    if(argc > 3)
-        RenderSprite.getTexture()->copyToImage().saveToFile(argv[3]);
+    if(argc > 5)
+        RenderSprite.getTexture()->copyToImage().saveToFile(argv[5]);
 
     return 0;
 }
