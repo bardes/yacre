@@ -9,9 +9,14 @@
 #include "Texture.hh"
 
 #include "Primitives/Sphere.hh"
+#include "Primitives/InfinetePlane.hh"
+
 #include "Materials/Diffuse.hh"
 #include "Materials/Mirror.hh"
+#include "Materials/Transparent.hh"
+
 #include "Lamps/PointLamp.hh"
+#include "Lamps/Sun.hh"
 
 int main(int argc, char *argv[])
 {
@@ -28,23 +33,35 @@ int main(int argc, char *argv[])
     // Creates an empty scene with a camera
     float fov = glm::radians<float>(60.0f);
     yacre::Scene s(new yacre::Camera(res, fov));
-    s.GetCamera()->SetPosition(glm::vec3(0, 0, 3));
+    s.GetCamera()->SetPosition(glm::vec3(1, 3, 2));
+    s.GetCamera()->SetOrientation(glm::vec3(1, 0, 0), glm::radians<float>(30));
+    s.GetCamera()->Rotate(glm::vec3(0, 1, 0), glm::radians<float>(-15));
     s.SetBackgroundColor(glm::vec3(0, 0, 0));
+    s.SetBackgroundTexture(argv[3]);
 
     // Creates some materials
     s.AddMaterial("Branco", new yacre::Diffuse(glm::vec3(.8)));
+    s.AddMaterial("Transp", new yacre::Transparent(1.5));
 
     // Creates a texture
     s.AddTexture("Tex", new yacre::Texture(argv[3], argv[4]));
 
     // Create a sphere
-    auto p = new yacre::Sphere(glm::vec3(0, 0, 0), 1.2);
+    yacre::Primitive *p = new yacre::Sphere(glm::vec3(-1.5, 1.f, 0), .7f);
+    p->SetMaterial(s.GetMaterial("Transp"));
+    s.AddPrimitive("Bolota-1", p);
+    p = new yacre::Sphere(glm::vec3(1.5, 1.f, 0), .7f);
     p->SetMaterial(s.GetMaterial("Branco"));
     p->SetTexture(s.GetTexture("Tex"));
-    s.AddPrimitive("Bolota", p);
+    s.AddPrimitive("Bolota-2", p);
+
+    p = new yacre::InfinetePlane(3);
+    p->SetMaterial(s.GetMaterial("Branco"));
+    p->SetTexture(s.GetTexture("Tex"));
+    s.AddPrimitive("Plano", p);
 
     // And a few lamps
-    auto l = new yacre::PointLamp(glm::vec3(0,0,5));
+    yacre::Lamp *l = new yacre::PointLamp(glm::vec3(0,2,5));
     l->SetPosition(glm::vec3(3, 2, 3));
     s.AddLamp("Lampadinha", l);
     l = new yacre::PointLamp(glm::vec3(25, 25, 15));
@@ -53,6 +70,9 @@ int main(int argc, char *argv[])
     l = new yacre::PointLamp(glm::vec3(10, 10, 15));
     l->SetPosition(glm::vec3(0, 2, 2));
     s.AddLamp("Lampadinha-3", l);
+    l = new yacre::Sun(glm::vec3(.3, .3, .3));
+    l->SetOrientation(glm::vec3(.3, 0, 1), glm::radians<float>(45));
+    s.AddLamp("El-Sol", l);
 
     // Creates a render view to manage the scene rendering
     yacre::RenderView rv(s);

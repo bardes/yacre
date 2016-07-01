@@ -23,11 +23,11 @@ namespace yacre
 
             glm::vec3 GetNormal(const glm::vec3 &point) const
             {
-                glm::vec3 normal = ComputeNormal(point);
                 if(mTexture && mTexture->HasNormal())
-                    normal = ComputeTangentSpace(point) *
-                             mTexture->ComputeNormal(ComputeUV(point));
-                return normal;
+                    return ComputeTangentSpace(point) *
+                           mTexture->ComputeNormal(ComputeUV(point));
+                else
+                    return  ComputeNormal(point);
             }
 
             virtual glm::vec3 ComputeNormal(const glm::vec3 &point) const = 0;
@@ -61,12 +61,12 @@ namespace yacre
                                               out.GetDirection());
             }
 
-            bool Refract(const Ray &in, Ray &out) const
+            float Refract(const Ray &in, Ray &out) const
             {
                 return !mMaterial ? 0 :
                         mMaterial->Refraction(in.GetDirection(),
-                                              GetNormal(out.GetOrigin()),
-                                              out.GetDirection());
+                                                GetNormal(out.GetOrigin()),
+                                                out.GetDirection());
             }
 
             void SetMaterial(const Material *mat) {mMaterial = mat;}

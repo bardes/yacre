@@ -22,6 +22,7 @@ namespace yacre
             {
                 glm::vec3 T, B, N;
                 B = GetPosition() + glm::vec3(0, mRadiusSq, 0) / mRadiusSq;
+                B = B - point;
                 N = ComputeNormal(point);
                 T = glm::cross(B, N);
                 B = glm::cross(N, T);

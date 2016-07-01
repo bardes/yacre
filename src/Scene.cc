@@ -171,7 +171,7 @@ glm::vec3
 yacre::Scene::Cast(const yacre::Ray& r, unsigned int bouncesLeft) const
 {
     // Depth limit reached
-    if(!bouncesLeft) return mBackgroundColor;
+    if(!bouncesLeft) return glm::vec3(0);
 
     float int_dist; // Intersection distance
     if(auto hit = Trace(r, int_dist)) {
@@ -182,10 +182,10 @@ yacre::Scene::Cast(const yacre::Ray& r, unsigned int bouncesLeft) const
         glm::vec3 color(0);
         for(auto it : mLamps) {
             const Lamp* lamp = it.second;
-            Ray shadow(point, glm::normalize(lamp->GetPosition() - point));
+            Ray shadow = lamp->Shadow(point); // (point, glm::normalize(lamp->GetPosition() - point));
             shadow.GetOrigin() += shadow.GetDirection() * mBias;
             float distance;
-            if(!Trace(shadow, distance)) {
+            if(!Trace(shadow, distance) || distance > glm::distance(lamp->GetPosition(), point)) {
                 color += hit->Diffuse(r, shadow) * lamp->Shine(point) *
                         glm::dot(shadow.GetDirection(), hit->GetNormal(point));
             }
@@ -200,9 +200,9 @@ yacre::Scene::Cast(const yacre::Ray& r, unsigned int bouncesLeft) const
             rflec.GetOrigin() += hit->ComputeNormal(point) * mBias;
             color += rfl * Cast(rflec, bouncesLeft - 1);
         }
-        float rfr = hit->Reflect(r, rfrac);
+        float rfr = hit->Refract(r, rfrac);
         if(rfr > 0) {
-            rfrac.GetOrigin() -= hit->ComputeNormal(point) * mBias;
+            rfrac.GetOrigin() += rfrac.GetDirection() * mBias;
             color += rfr * Cast(rfrac, bouncesLeft - 1);
         }
 
@@ -210,7 +210,13 @@ yacre::Scene::Cast(const yacre::Ray& r, unsigned int bouncesLeft) const
     }
 
     // No intersection
-    return mBackgroundColor;
+    if(mBackgroundTexture.HasColor()) {
+        return mBackgroundTexture.ComputeColor(
+            ComputeBackgroundUV(r.GetDirection())
+        );
+    } else {
+        return mBackgroundColor;
+    }
 }
 
 const yacre::Primitive*
@@ -258,7 +264,7 @@ void yacre::Scene::Render(glm::vec3 *buffer) const
             // Creates the ray with a normalized direction
             Ray r(mCamera->GetPosition(), glm::normalize(direction));
 
-            buffer[line * res.x + col] += Cast(r, 3);
+            buffer[line * res.x + col] += Cast(r, 4);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace yacre
     class Texture
     {
     public:
-        Texture (const std::string &color, const std::string &normal = "");
+        Texture (const std::string &color="", const std::string &normal="");
         ~Texture () = default;
 
         glm::vec3 ComputeColor(glm::vec2 uv) const;
@@ -18,6 +18,18 @@ namespace yacre
 
         void SetScale(float s) {mScale = s;}
         float GetScale() const {return mScale;}
+
+        bool SetColorMap(const std::string &imgPath)
+        {
+            mHasColorMap = mColorMap.loadFromFile(imgPath);
+            return mHasColorMap;
+        }
+
+        bool SetNormalMap(const std::string &imgPath)
+        {
+            mHasNormalMap = mNormalMap.loadFromFile(imgPath);
+            return mHasNormalMap;
+        }
 
         bool HasColor() const {return mHasColorMap;}
         bool HasNormal() const {return mHasNormalMap;}

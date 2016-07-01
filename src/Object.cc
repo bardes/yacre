@@ -19,3 +19,13 @@ void yacre::Object::SetOrientation(const glm::vec3& axis, float angle)
 {
     mOrientation = AxisAngleToQuat(axis, angle);
 }
+
+void yacre::Object::Rotate(const glm::quat& rot)
+{
+    mOrientation *= rot;
+}
+
+void yacre::Object::Rotate(const glm::vec3& axis, float angle)
+{
+    mOrientation *= AxisAngleToQuat(axis, angle);
+}

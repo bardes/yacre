@@ -12,7 +12,7 @@ namespace yacre
     class Mirror : public Material {
     public:
         Mirror(const glm::vec3 &color, float roughness):
-        mColor(color), mReflectiveness(roughness) {}
+        mColor(color), mReflectiveness(1 - roughness) {}
 
         virtual ~Mirror() = default;
 

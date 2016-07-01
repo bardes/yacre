@@ -29,6 +29,10 @@ namespace yacre
             void SetCamera(Camera *cam) {delete mCamera; mCamera = cam;}
             void SetBackgroundColor(glm::vec3 col) {mBackgroundColor = col;}
             void SetBias(float b) {mBias = b;}
+            bool SetBackgroundTexture(const std::string& imgPath)
+            {
+                return mBackgroundTexture.SetColorMap(imgPath);
+            }
 
             Primitive* GetPrimitive(const std::string &name);
             Lamp* GetLamp(const std::string &name);
@@ -86,6 +90,13 @@ namespace yacre
              */
             const yacre::Primitive* Trace(const Ray &r, float &distance) const;
 
+            glm::vec2 ComputeBackgroundUV(const glm::vec3 d) const
+            {
+                float u = .5f + std::atan2(d.x, d.z) / glm::two_pi<float>();
+                float v = .5f + std::asin(d.y) / glm::pi<float>();
+                return glm::vec2(-u, -v);
+            }
+
             // Basic components of the scene
             std::unordered_map<std::string, Primitive*> mPrimitives;
             std::unordered_map<std::string, Lamp*> mLamps;
@@ -95,6 +106,8 @@ namespace yacre
 
             glm::vec3 mBackgroundColor;
             float mBias;
+
+            Texture mBackgroundTexture;
     };
 }
 #endif /* end of include guard: SCENE_HH_72UDZNZ5 */

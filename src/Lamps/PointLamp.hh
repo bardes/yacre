@@ -18,6 +18,11 @@ namespace yacre
 
             virtual glm::vec3 Shine(const glm::vec3& point) const;
 
+            virtual Ray Shadow(const glm::vec3& point) const
+            {
+                return Ray(point, glm::normalize(GetPosition() - point));
+            }
+
         private:
             glm::vec3 mIntensity;
     };

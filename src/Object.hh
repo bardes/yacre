@@ -16,8 +16,11 @@ namespace yacre
             virtual ~Object() = default;
 
             void SetPosition(const glm::vec3 &p) {mPosition = p;}
+            void Move(const glm::vec3 &delta) {mPosition += delta;}
             void SetOrientation(const glm::quat &o) {mOrientation = o;}
             void SetOrientation(const glm::vec3 &axis, float angle);
+            void Rotate(const glm::vec3 &axis, float angle);
+            void Rotate(const glm::quat &rot);
 
 
             glm::vec3 GetPosition() const {return mPosition;}
