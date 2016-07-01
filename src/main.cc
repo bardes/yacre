@@ -33,31 +33,38 @@ int main(int argc, char *argv[])
     // Creates an empty scene with a camera
     float fov = glm::radians<float>(60.0f);
     yacre::Scene s(new yacre::Camera(res, fov));
-    s.GetCamera()->SetPosition(glm::vec3(1, 3, 2));
-    s.GetCamera()->SetOrientation(glm::vec3(1, 0, 0), glm::radians<float>(30));
-    s.GetCamera()->Rotate(glm::vec3(0, 1, 0), glm::radians<float>(-15));
-    s.SetBackgroundColor(glm::vec3(0, 0, 0));
-    s.SetBackgroundTexture(argv[3]);
+    s.GetCamera()->SetPosition(glm::vec3(0, 1, 2));
+    s.GetCamera()->SetOrientation(glm::vec3(1, 0, 0), glm::radians<float>(5));
+    s.SetBackgroundTexture("img/col/garage.png");
 
     // Creates some materials
-    s.AddMaterial("Branco", new yacre::Diffuse(glm::vec3(.8)));
+    s.AddMaterial("Branco", new yacre::Diffuse(glm::vec3(.9)));
     s.AddMaterial("Transp", new yacre::Transparent(1.5));
+    s.AddMaterial("Mirr", new yacre::Mirror(glm::vec3(.97), 0));
 
     // Creates a texture
-    s.AddTexture("Tex", new yacre::Texture(argv[3], argv[4]));
+    s.AddTexture("Wood", new yacre::Texture("img/col/wood.jpg", "img/nor/wood.jpg"));
+    s.AddTexture("Grid", new yacre::Texture("img/col/grid.png", "img/nor/bumpy.jpg"));
 
     // Create a sphere
-    yacre::Primitive *p = new yacre::Sphere(glm::vec3(-1.5, 1.f, 0), .7f);
+    yacre::Primitive *p;
+    p = new yacre::Sphere(glm::vec3(-1.5, .3, 0), .3);
     p->SetMaterial(s.GetMaterial("Transp"));
     s.AddPrimitive("Bolota-1", p);
-    p = new yacre::Sphere(glm::vec3(1.5, 1.f, 0), .7f);
+    p = new yacre::Sphere(glm::vec3(-.5, .3, 0), .3);
     p->SetMaterial(s.GetMaterial("Branco"));
-    p->SetTexture(s.GetTexture("Tex"));
     s.AddPrimitive("Bolota-2", p);
+    p = new yacre::Sphere(glm::vec3(.5, .3, -.2), .3);
+    p->SetMaterial(s.GetMaterial("Mirr"));
+    s.AddPrimitive("Bolota-3", p);
+    p = new yacre::Sphere(glm::vec3(1.5, .3, 0), .3);
+    p->SetMaterial(s.GetMaterial("Branco"));
+    p->SetTexture(s.GetTexture("Grid"));
+    s.AddPrimitive("Bolota-4", p);
 
     p = new yacre::InfinetePlane(3);
     p->SetMaterial(s.GetMaterial("Branco"));
-    p->SetTexture(s.GetTexture("Tex"));
+    p->SetTexture(s.GetTexture("Wood"));
     s.AddPrimitive("Plano", p);
 
     // And a few lamps
@@ -107,8 +114,8 @@ int main(int argc, char *argv[])
 
     std::cout << "Passes: " << n << std::endl;
 
-    if(argc > 5)
-        RenderSprite.getTexture()->copyToImage().saveToFile(argv[5]);
+    if(argc > 3)
+        RenderSprite.getTexture()->copyToImage().saveToFile(argv[3]);
 
     return 0;
 }
