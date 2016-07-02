@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
     // Creates a texture
     s.AddTexture("Wood", new yacre::Texture("img/col/wood.jpg", "img/nor/wood.jpg"));
-    s.AddTexture("Grid", new yacre::Texture("img/col/grid.png", "img/nor/bumpy.jpg"));
+    s.AddTexture("Earth", new yacre::Texture("img/col/earth.jpg", "img/nor/earth.jpg"));
 
     // Create a sphere
     yacre::Primitive *p;
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     s.AddPrimitive("Bolota-3", p);
     p = new yacre::Sphere(glm::vec3(1.5, .3, 0), .3);
     p->SetMaterial(s.GetMaterial("Branco"));
-    p->SetTexture(s.GetTexture("Grid"));
+    p->SetTexture(s.GetTexture("Earth"));
     s.AddPrimitive("Bolota-4", p);
 
     p = new yacre::InfinetePlane(3);
